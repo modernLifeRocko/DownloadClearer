@@ -1,8 +1,9 @@
 import os
 import re
+from shutil import rmtree
 
 book_exts = {'.epub', '.djvu', '.mobi'}
-img_exts = {'.jpg', '.jpeg', '.png', '.gif'}
+img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG'}
 music_exts = {'.mp3', '.wma', '.ogg', '.wav'}
 video_exts = {'.mp4', '.wmv', '.mpeg'}
 install_exts = {'.exe', '.deb'}
@@ -42,14 +43,22 @@ def manual_handle(file: str, dirs: dict[str, str]) -> None:
               """))
     match opt:
         case 1:
-            os.remove(file)
+            delete_path(file)
         case 2:
             new_file = ''.join(file.split())
             os.rename(file, dirs['DOC']+'/'+new_file)
         case 3:
             print(f'{file} left unchanged. Moved on to next file')
         case _:
-            print(f'Didn\'t understand that. Left {file} unchanged')
+            print('Didn\'t understand that. Try again')
+            manual_handle(file, dirs)
+
+
+def delete_path(path: str) -> None:
+    if os.path.isfile(path):
+        os.remove(path)
+    else:
+        rmtree(path)
 
 
 def main(test=False):
