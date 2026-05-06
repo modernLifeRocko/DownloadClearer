@@ -2,11 +2,11 @@ import os
 import re
 from shutil import rmtree
 
-book_exts = {'.epub', '.djvu', '.mobi'}
+book_exts = {'.epub', '.djvu', '.mobi', 'azw3'}
 img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG'}
 music_exts = {'.mp3', '.wma', '.ogg', '.wav'}
 video_exts = {'.mp4', '.wmv', '.mpeg'}
-install_exts = {'.exe', '.deb'}
+install_exts = {'.exe', '.deb', 'rpm'}
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
@@ -29,7 +29,7 @@ def get_dirs(test: bool, env='.env') -> dict[str, str]:
 
 
 def pdfIsBook(file: str) -> bool:
-    book = input(f'is {file} a book?y/n')
+    book = input(f'is {file} a book?(y/n) ')
     isBook = True if book == 'y' else False
     return isBook
 
