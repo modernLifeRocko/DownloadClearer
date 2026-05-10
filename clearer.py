@@ -36,11 +36,11 @@ def pdfIsBook(file: str) -> bool:
 
 def manual_handle(file: str, dirs: dict[str, str]) -> None:
     print(f'What do you want to do with {file}?')
-    opt = int(input("""
-        1. Delete
-        2. Move to Docs
-        3. Do nothing
-              """))
+    opt = int(input(
+        "1. Delete\n"
+        "2. Move to Docs\n"
+        "3. Do nothing\n"
+    ))
     match opt:
         case 1:
             delete_path(file)
@@ -50,7 +50,7 @@ def manual_handle(file: str, dirs: dict[str, str]) -> None:
         case 3:
             print(f'{file} left unchanged. Moved on to next file')
         case _:
-            print('Didn\'t understand that. Try again')
+            print("Didn\'t understand that. Try again")
             manual_handle(file, dirs)
 
 
@@ -69,7 +69,7 @@ def main(test=False):
     download_files = os.listdir()
     for file in download_files:
         _, ext = os.path.splitext(file)
-        new_file=''.join(file.split())
+        new_file = ''.join(file.split())
         # delete installers
         if ext in install_exts:
             os.remove(file)
