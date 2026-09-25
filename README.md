@@ -9,7 +9,7 @@ Precisely, this script:
 - Moves audio files to MUSIC_DIR.
 - Moves video files to VIDEO_DIR.
 - PDF files are moved to BOOK_DIR or DOC_DIR depending on whether they're books or not.
-- For other files asks user whether to delete, send to DOC_DIR, or do nothing
+- For other files asks user whether to delete, send to DOC_DIR, or do nothing.
 A log file keeps track of all changes.
 
 
