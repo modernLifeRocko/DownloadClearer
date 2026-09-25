@@ -109,6 +109,10 @@ def main(test=False):
     # get directories for Download, Docs...
     dirs = get_dirs(test)
     os.chdir(dirs['DOWNLOAD'])
+    with open(log_file, 'a') as logs:
+        logs.write("===================================================\n")
+        logs.write(f"{datetime.datetime.now()}\n")
+        logs.write("===================================================\n")
     # loop over downfiles
     download_files = os.listdir()
     for file in download_files:
@@ -149,9 +153,11 @@ def main(test=False):
         # manually deal with other files
         else:
             manual_handle(file, dirs)
-    #deletes all logs that exceed the threshold defined early
+    # deletes all logs that exceed the threshold defined early
     delete_logs(max_log_size)
 
+    with open(log_file, 'a') as logs:
+        logs.write(f"===================================================\n")
 
 
 if __name__ == "__main__":
