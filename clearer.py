@@ -15,6 +15,7 @@ video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
 install_exts = {'.exe', '.deb', 'rpm'}
 ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which should be ignored
 
+automove_set = set(img_exts | book_exts | video_exts | music_exts)
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
@@ -83,9 +84,9 @@ def main(test=False):
     dirs = get_dirs(test)
     os.chdir(dirs['DOWNLOAD'])
     with open(log_file, 'a') as logs:
-        logs.write(f"===================================================\n")
+        logs.write("===================================================\n")
         logs.write(f"{datetime.datetime.now()}\n")
-        logs.write(f"===================================================\n")
+        logs.write("===================================================\n")
     # loop over downfiles
     download_files = os.listdir()
     for file in download_files:
@@ -100,11 +101,7 @@ def main(test=False):
             with open(log_file, 'a') as logs:
                 logs.write(f"{file} removed.\n")
 
-        # manually deal with other files
-        elif ext not in set(img_exts | book_exts | video_exts | music_exts) and ext != '.pdf':
-            manual_handle(file, dirs)
-
-        else:
+        elif ext in automove_set or ext == '.pdf':
             # move images
             if ext in img_exts:
                 dir = 'IMG'
@@ -124,10 +121,15 @@ def main(test=False):
                 if isBook:
                     dir = 'BOOK'
                 else:
-                    dir = 'BOOK'
+                    dir = 'DOC'
 
             os.rename(file, dirs[dir]+'/'+new_file)
             write_log(file, dirs[dir], log_file)
+
+        # manually deal with other files
+        else:
+            manual_handle(file, dirs)
+
     with open(log_file, 'a') as logs:
         logs.write(f"===================================================\n")
 
