@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 import re
 import sqlite3
 from shutil import rmtree
@@ -36,7 +37,7 @@ def get_dirs(test: bool, env='.env') -> dict[str, str]:
                 lineformat = re.search('(.*)_DIR="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(os.path.dirname(__file__), dir_path)
     return dirs
 
 
@@ -157,8 +158,11 @@ def main(test=False):
     delete_logs(max_log_size)
 
     with open(log_file, 'a') as logs:
-        logs.write(f"===================================================\n")
+        logs.write("===================================================\n")
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        main()
+    elif sys.argv[1] == 'test':
+        main(True)
