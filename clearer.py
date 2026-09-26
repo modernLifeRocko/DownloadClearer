@@ -1,11 +1,12 @@
 import os
 import re
 import datetime
+import sqlite3
 from shutil import rmtree
 
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
-log_file = os.path.join(script_folder, "logs.txt")
+log_file = os.path.join(script_folder, "logs.db")
 
 
 book_exts = {'.epub', '.djvu', '.mobi', 'azw3'}
@@ -18,8 +19,7 @@ ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which shou
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
-    #ensures .env file gets recognized if it's stored in the same place as python file
-    env = os.path.join(os.path.dirname(__file__), env) #can probably be adjusted via script_folder
+    env = os.path.join(script_folder, env)
     dirs = dict()
     with open(env, 'r') as dir_file:
         lines = dir_file.readlines()
@@ -56,11 +56,10 @@ def manual_handle(file: str, dirs: dict[str, str]) -> None:
         case 2:
             new_file = ''.join(file.split())
             os.rename(file, dirs['DOC']+'/'+new_file)
-            write_log(file, 'DOC', log_file)
+            write_log(file, dirs['DOC'])
         case 3:
             print(f'{file} left unchanged. Moved on to next file')
-            with open(log_file, 'a') as logs:
-                logs.write(f"{file} left unchanged.\n")
+            write_log(file, 'DOWNLOAD')
         case _:
             print("Didn\'t understand that. Try again")
             manual_handle(file, dirs)
@@ -73,19 +72,29 @@ def delete_path(path: str) -> None:
         rmtree(path)
 
 
-def write_log(moved_file, directory, log_file_name):
-    with open(log_file_name, 'a') as logs:
-        logs.write(f"{moved_file} got moved to {directory}.\n")
 
+def write_log(moved_file, directory):
+    with sqlite3.connect(log_file) as logs:
+        logs.execute("""
+        CREATE TABLE IF NOT EXISTS log_file (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp TEXT NOT NULL,
+        file_name TEXT NOT NULL,
+        destination TEXT NOT NULL
+        )
+        """)
+        logs.execute("""
+        INSERT INTO log_file (timestamp, file_name, destination)
+        VALUES (?,?,?)       
+        """,
+        (datetime.datetime.now().isoformat(), moved_file, directory)            
+        )
+    
 
 def main(test=False):
     # get directories for Download, Docs...
     dirs = get_dirs(test)
     os.chdir(dirs['DOWNLOAD'])
-    with open(log_file, 'a') as logs:
-        logs.write(f"===================================================\n")
-        logs.write(f"{datetime.datetime.now()}\n")
-        logs.write(f"===================================================\n")
     # loop over downfiles
     download_files = os.listdir()
     for file in download_files:
@@ -93,18 +102,13 @@ def main(test=False):
         new_file = ''.join(file.split())
         # delete installers
         if ext in ignore_exts:
-            with open(log_file, 'a') as logs:
-                logs.write(f"{file} ignored. No action taken.\n")
+            write_log(file, 'DOWNLOAD')
         elif ext in install_exts:
             os.remove(file)
-            with open(log_file, 'a') as logs:
-                logs.write(f"{file} removed.\n")
-
-        # manually deal with other files
-        elif ext not in set(img_exts | book_exts | video_exts | music_exts) and ext != '.pdf':
-            manual_handle(file, dirs)
-
-        else:
+            write_log(file, '(deleted)')
+        
+        #images, books, videos, music and pdfs
+        elif ext in (img_exts | book_exts | video_exts | music_exts) or ext == '.pdf':
             # move images
             if ext in img_exts:
                 dir = 'IMG'
@@ -124,12 +128,15 @@ def main(test=False):
                 if isBook:
                     dir = 'BOOK'
                 else:
-                    dir = 'BOOK'
+                    dir = 'DOC'
 
             os.rename(file, dirs[dir]+'/'+new_file)
-            write_log(file, dirs[dir], log_file)
-    with open(log_file, 'a') as logs:
-        logs.write(f"===================================================\n")
+            write_log(file, dirs[dir])
+
+        # manually deal with other files
+        else:
+            manual_handle(file, dirs)
+
 
 
 if __name__ == "__main__":
