@@ -8,11 +8,11 @@ script_folder = os.path.dirname(os.path.abspath(__file__))
 log_file = os.path.join(script_folder, "logs.txt")
 
 
-book_exts = {'.epub', '.djvu', '.mobi', 'azw3'}
-img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG'}
+book_exts = {'.epub', '.djvu', '.mobi', '.azw3'}
+img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG', '.heic', '.HEIC'}
 music_exts = {'.mp3', '.wma', '.ogg', '.wav'}
 video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
-install_exts = {'.exe', '.deb', 'rpm'}
+install_exts = {'.exe', '.deb', '.rpm'}
 ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which should be ignored
 
 automove_set = set(img_exts | book_exts | video_exts | music_exts)
