@@ -28,4 +28,4 @@ Handle other files by date of last use
 
 Create a pdf classifier
 
-Update log file to more appropriate format
+~~Update log file to more appropriate format~~
