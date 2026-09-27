@@ -1,3 +1,5 @@
 .env
 logs.db
 db_test.py
+__pycache__
+tests/*/*
