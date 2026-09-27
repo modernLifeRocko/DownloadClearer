@@ -8,6 +8,9 @@ from shutil import rmtree
 script_folder = os.path.dirname(os.path.abspath(__file__))
 log_file = os.path.join(script_folder, "logs.db")
 
+#maximum number of rows in log database
+max_log_size = 200
+
 
 book_exts = {'.epub', '.djvu', '.mobi', 'azw3'}
 img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG'}
@@ -89,6 +92,19 @@ def write_log(moved_file, directory):
         """,
         (datetime.datetime.now().isoformat(), moved_file, directory)            
         )
+
+def delete_logs(log_size):
+     with sqlite3.connect(log_file) as logs:
+            logs.execute("""
+            DELETE FROM log_file
+            WHERE id NOT IN (
+            SELECT id 
+            FROM log_file
+            ORDER BY timestamp DESC
+            LIMIT ?
+            )
+        """, (log_size,))
+
     
 
 def main(test=False):
@@ -136,6 +152,8 @@ def main(test=False):
         # manually deal with other files
         else:
             manual_handle(file, dirs)
+    #deletes all logs that exceed the threshold defined early
+    delete_logs(max_log_size)
 
 
 
