@@ -19,6 +19,7 @@ video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
 install_exts = {'.exe', '.deb', 'rpm'}
 ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which should be ignored
 
++automove_set = set(img_exts | book_exts | video_exts | music_exts)
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
@@ -124,7 +125,7 @@ def main(test=False):
             write_log(file, '(deleted)')
         
         #images, books, videos, music and pdfs
-        elif ext in (img_exts | book_exts | video_exts | music_exts) or ext == '.pdf':
+        elif ext in automove_set or ext == '.pdf':
             # move images
             if ext in img_exts:
                 dir = 'IMG'
