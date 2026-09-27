@@ -28,10 +28,11 @@ def get_dirs(test: bool, env='.env') -> dict[str, str]:
         dirs = dict()
         for line in lines:
             if test:
+                proot = os.getcwd()
                 lineformat = re.search('(.*)_DIR_TEST="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(proot, dir_path)
             else:
                 lineformat = re.search('(.*)_DIR="(.*)"', line)
                 if lineformat:
