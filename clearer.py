@@ -19,7 +19,7 @@ video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
 install_exts = {'.exe', '.deb', 'rpm'}
 ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which should be ignored
 
-+automove_set = set(img_exts | book_exts | video_exts | music_exts)
+automove_set = set(img_exts | book_exts | video_exts | music_exts)
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
