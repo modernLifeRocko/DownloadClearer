@@ -74,7 +74,6 @@ def delete_path(path: str) -> None:
         rmtree(path)
 
 
-
 def write_log(moved_file, directory):
     with sqlite3.connect(log_file) as logs:
         logs.execute("""
