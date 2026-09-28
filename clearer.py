@@ -104,7 +104,7 @@ def main(test=False):
             os.remove(file)
             write_log(file, '(deleted)')
 
-        elif ext in (img_exts | book_exts | video_exts | music_exts) or ext == '.pdf':
+        elif ext in automove_set or ext == '.pdf':
             # move images
             if ext in img_exts:
                 dir = 'IMG'
