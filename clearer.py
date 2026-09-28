@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 import re
 import sqlite3
 from shutil import rmtree
@@ -9,7 +10,7 @@ log_file = os.path.join(script_folder, "logs.db")
 
 
 book_exts = {'.epub', '.djvu', '.mobi', '.azw3'}
-img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG', '.heic', '.HEIC'}
+img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG', '.heic', '.HEIC', '.heic', '.HEIC'}
 music_exts = {'.mp3', '.wma', '.ogg', '.wav'}
 video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
 install_exts = {'.exe', '.deb', '.rpm'}
@@ -24,15 +25,16 @@ def get_dirs(test: bool, env='.env') -> dict[str, str]:
         lines = dir_file.readlines()
         for line in lines:
             if test:
+                proot = os.getcwd()
                 lineformat = re.search('(.*)_DIR_TEST="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(proot, dir_path)
             else:
                 lineformat = re.search('(.*)_DIR="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(os.path.dirname(__file__), dir_path)
     return dirs
 
 
@@ -127,11 +129,7 @@ def main(test=False):
                     dir = 'DOC'
 
             os.rename(file, dirs[dir]+'/'+new_file)
-            write_log(file, dirs[dir])
-
-        # manually deal with other files
-        else:
-            manual_handle(file, dirs)
+            write_log(file, dirs[dir], log_file)
 
 
 if __name__ == "__main__":

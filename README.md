@@ -27,5 +27,3 @@ I make no assurances that it runs on your system.
 Handle other files by date of last use
 
 Create a pdf classifier
-
-~~Update log file to more appropriate format~~
