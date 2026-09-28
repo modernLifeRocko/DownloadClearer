@@ -1,5 +1,6 @@
 import datetime
 import os
+import sys
 import re
 import sqlite3
 from shutil import rmtree
@@ -28,15 +29,16 @@ def get_dirs(test: bool, env='.env') -> dict[str, str]:
         lines = dir_file.readlines()
         for line in lines:
             if test:
+                proot = os.getcwd()
                 lineformat = re.search('(.*)_DIR_TEST="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(proot, dir_path)
             else:
                 lineformat = re.search('(.*)_DIR="(.*)"', line)
                 if lineformat:
                     dir_name, dir_path = lineformat.groups()
-                    dirs[dir_name] = dir_path
+                    dirs[dir_name] = os.path.join(os.path.dirname(__file__), dir_path)
     return dirs
 
 
@@ -155,4 +157,7 @@ def main(test=False):
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        main()
+    elif sys.argv[1] == 'test':
+        main(True)
