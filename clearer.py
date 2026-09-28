@@ -1,9 +1,8 @@
+import datetime
 import os
 import re
-import datetime
 import sqlite3
 from shutil import rmtree
-
 
 script_folder = os.path.dirname(os.path.abspath(__file__))
 log_file = os.path.join(script_folder, "logs.db")
@@ -14,17 +13,15 @@ img_exts = {'.jpg', '.jpeg', '.png', '.gif', '.PNG', '.JPEG', '.heic', '.HEIC'}
 music_exts = {'.mp3', '.wma', '.ogg', '.wav'}
 video_exts = {'.mp4', '.wmv', '.mpeg', '.mov'}
 install_exts = {'.exe', '.deb', '.rpm'}
-ignore_exts = {'.ini'} #windows download folder contains desktop.ini, which should be ignored
-
+ignore_exts = {'.ini'} #windows dl folder contains desktop.ini, which should be ignored
 automove_set = set(img_exts | book_exts | video_exts | music_exts)
 
 
 def get_dirs(test: bool, env='.env') -> dict[str, str]:
     env = os.path.join(script_folder, env)
-    dirs = dict()
+    dirs: dict[str, str] = {}
     with open(env, 'r') as dir_file:
         lines = dir_file.readlines()
-        dirs = dict()
         for line in lines:
             if test:
                 lineformat = re.search('(.*)_DIR_TEST="(.*)"', line)
@@ -73,7 +70,6 @@ def delete_path(path: str) -> None:
         rmtree(path)
 
 
-
 def write_log(moved_file, directory):
     with sqlite3.connect(log_file) as logs:
         logs.execute("""
@@ -86,11 +82,11 @@ def write_log(moved_file, directory):
         """)
         logs.execute("""
         INSERT INTO log_file (timestamp, file_name, destination)
-        VALUES (?,?,?)       
+        VALUES (?,?,?)
         """,
-        (datetime.datetime.now().isoformat(), moved_file, directory)            
+        (datetime.datetime.now().astimezone().isoformat(), moved_file, directory)
         )
-    
+
 
 def main(test=False):
     # get directories for Download, Docs...
@@ -107,7 +103,7 @@ def main(test=False):
         elif ext in install_exts:
             os.remove(file)
             write_log(file, '(deleted)')
-        
+
         #images, books, videos, music and pdfs
         elif ext in (img_exts | book_exts | video_exts | music_exts) or ext == '.pdf':
             # move images
@@ -137,7 +133,6 @@ def main(test=False):
         # manually deal with other files
         else:
             manual_handle(file, dirs)
-
 
 
 if __name__ == "__main__":
