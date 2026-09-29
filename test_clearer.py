@@ -1,12 +1,18 @@
-import unittest
-import clearer
 import os
+import unittest
+
+import clearer
+
+
+def clear_dir(dir_path):
+    pass
 
 
 class TestClearer(unittest.TestCase):
     def setUp(self):
         # create files with extensions in every class
         proot = os.getcwd()
+        os.remove('tests/Downloads/.gitkeep')
         open('tests/Downloads/img.jpg', 'w').close()
         open('tests/Downloads/book.epub', 'w').close()
         open('tests/Downloads/vid.mov', 'w').close()
@@ -42,6 +48,13 @@ class TestClearer(unittest.TestCase):
     def tearDown(self):
         # clear all test directories
         os.system('find tests -mindepth 2 -delete')
+        # reinstate .gitkeeps to keep structure
+        open('tests/Downloads/.gitkeep', 'w').close()
+        open('tests/Documents/.gitkeep', 'w').close()
+        open('tests/Pictures/.gitkeep', 'w').close()
+        open('tests/Library/.gitkeep', 'w').close()
+        open('tests/Music/.gitkeep', 'w').close()
+        open('tests/Movies/.gitkeep', 'w').close()
 
 
 if __name__ == '__main__':
